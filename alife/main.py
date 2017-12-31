@@ -24,10 +24,10 @@ if __name__ == '__main__':
             env,
             q_func=model,
             lr=1e-3,
-            max_timesteps=1000,
+            max_timesteps=50000,
             buffer_size=50000,
             exploration_fraction=0.1,
-            exploration_final_eps=0.02,
+            exploration_final_eps=0.05,
             print_freq=10,
             callback=None
         )
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     elif args.action == 'run':
         act = deepq.load('alife.pkl')
 
-        while True:
+        for i in range(1):
             obs, done = env.reset(), False
             episode_rew = 0
             while not done:

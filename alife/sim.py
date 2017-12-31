@@ -8,7 +8,7 @@ class Simulator(object):
         self.agent_pos = np.array([2, 2])
 
     def act(self, a):
-        obs = 0
+        obs = np.array([0, 0, 0, 0])
         reward = 0
         done = False
 
@@ -21,6 +21,8 @@ class Simulator(object):
 
         # Apply special actions, e.g. eating food
         if self.grid[tuple(self.agent_pos)] == 2:
+            self.grid[tuple(self.agent_pos)] = 0
+        elif self.grid[tuple(self.agent_pos)] == 3:
             self.grid[tuple(self.agent_pos)] = 0
 
         obs = self._calculate_obs()
@@ -35,7 +37,7 @@ class Simulator(object):
         return self._calculate_obs()
 
     def init_grid(self):
-        return np.array([[0, 0, 3], [0, 0, 0], [2, 0, 0]])
+        return np.array([[0, 2, 0, 0, 3], [0, 0, 2, 2, 0], [0, 0, 0, 2, 0], [3, 0, 2, 0, 0], [0, 2, 0, 0, 3]])
 
     def is_done(self):
         return 2 not in self.grid
@@ -53,27 +55,35 @@ class Simulator(object):
     def _new_pos(self, cur_pos, a):
         is_valid = True
         diff = np.array([a - 2 if a % 2 == 1  else 0, a - 3 if a != 0 and a % 2 == 0 else 0])
-        new_pos = self.agent_pos + diff
+        new_pos = cur_pos + diff
         if (new_pos[0] < 0 or new_pos[0] >= len(self.grid)) or\
            (new_pos[1] < 0 or new_pos[1] >= len(self.grid[0])):
+            new_pos = cur_pos
             is_valid = False
 
         return new_pos, is_valid
 
     def _calculate_obs(self):
-        obs = [0, 0, 0, 0]
+        obs = np.array([0, 0, 0, 0])
+
+        def get_ob_for_cell(cell):
+            if cell == 0:
+                return 0
+            if cell == 1:
+                return 0
+            if cell == 2:
+                return 1
+            if cell == 3:
+                return -1
 
         for i in range(1, 5):
             new_pos, ok = self._new_pos(self.agent_pos, i)
             if ok:
-                obs[i - 1] = self.grid[tuple(new_pos)]
+                obs[i - 1] = get_ob_for_cell(self.grid[tuple(new_pos)])
             else:
-                obs[i - 1] = 1
+                obs[i - 1] = 0
 
-        value = obs[3] + 4 * obs[2] + 16 * obs[1] + 64 * obs[0]
-        #result = np.zeros(256, int)
-        #result[value] = 1
-        return value
+        return obs
 
     def __str__(self):
         s = ''
@@ -93,9 +103,12 @@ class Simulator(object):
             elif num == 4:
                 return 'a'
 
+        s += '+' + '-' * len(tmp_grid[0]) + '+\n'
         for r in tmp_grid:
+            s += '|'
             for c in r:
                 s += get_grid_char(c)
-            s += '\n'
+            s += '|\n'
+        s += '+' + '-' * len(tmp_grid[0]) + '+\n'
 
         return s

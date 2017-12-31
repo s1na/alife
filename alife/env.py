@@ -1,7 +1,7 @@
 import sys
 
 import gym
-from gym.spaces import Discrete, MultiDiscrete, Tuple
+from gym.spaces import Discrete, Box
 from six import StringIO
 
 from sim import Simulator
@@ -16,7 +16,7 @@ class Env(gym.Env):
         # {0: noop, 1: up, 2: left, 3: down, 4: right}
         self.action_space = Discrete(5)
         # {up: [blank, wall, food, danger], ...}
-        self.observation_space = Discrete(256)
+        self.observation_space = Box(low=-1, high=1, shape=(4,))
 
     def _step(self, a):
         obs, reward, done = self.sim.act(a)
@@ -37,5 +37,6 @@ class Env(gym.Env):
     def _close(self):
         pass
 
-    def _seed(self):
-        pass
+    def _seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
