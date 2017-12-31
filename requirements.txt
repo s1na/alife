@@ -20,7 +20,7 @@ cloudpickle==0.5.2
 dill==0.2.7.1
 enum34==1.1.6
 future==0.16.0
-gym==0.9.4
+-e git://github.com/openai/gym@0c91364cd4a7ea70f242a28b85c3aea2d74aa35a#egg=gym
 html5lib==0.9999999
 idna==2.6
 imageio==2.2.0

@@ -1,7 +1,11 @@
 import argparse
 
-from baselines.deepq.experiments.train_cartpole import main as train_cartpole_main
-from baselines.deepq.experiments.enjoy_cartpole import main as enjoy_cartpole_main
+import gym
+from baselines import deepq
+
+from env import Env
+
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Bring an agent into life')
@@ -13,7 +17,32 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
+    env = Env()
     if args.action == 'train':
-        train_cartpole_main()
+        model = deepq.models.mlp([64])
+        act = deepq.learn(
+            env,
+            q_func=model,
+            lr=1e-3,
+            max_timesteps=1000,
+            buffer_size=50000,
+            exploration_fraction=0.1,
+            exploration_final_eps=0.02,
+            print_freq=10,
+            callback=None
+        )
+
+        print('Saving model to alife.pkl')
+        act.save('alife.pkl')
     elif args.action == 'run':
-        enjoy_cartpole_main()
+        act = deepq.load('alife.pkl')
+
+        while True:
+            obs, done = env.reset(), False
+            episode_rew = 0
+            while not done:
+                env.render()
+                obs, rew, done, _ = env.step(act(obs[None])[0])
+                episode_rew += rew
+
+            print('Episode reward', episode_rew)
