@@ -6,6 +6,7 @@ class Simulator(object):
     def __init__(self):
         self.grid = self.init_grid()
         self.agent_pos = np.array([2, 2])
+        self.hunger = 1
 
     def act(self, a):
         obs = np.array([0, 0, 0, 0])
@@ -17,6 +18,7 @@ class Simulator(object):
         if ok:
             self.agent_pos = new_pos
 
+        self.hunger *= 1.01
         reward = self._get_reward()
 
         # Apply special actions, e.g. eating food
@@ -43,10 +45,11 @@ class Simulator(object):
         return 2 not in self.grid
 
     def _get_reward(self):
-        reward = 0
+        reward = 1 - self.hunger
 
         if self.grid[tuple(self.agent_pos)] == 2:
             reward += 1
+            self.hunger = 1
         elif self.grid[tuple(self.agent_pos)] == 3:
             reward -= 1
 

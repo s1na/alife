@@ -5,6 +5,7 @@ from gym.spaces import Discrete, Box
 from six import StringIO
 
 from sim import Simulator
+from owndiscrete import Owndiscrete
 
 
 
@@ -14,7 +15,7 @@ class Env(gym.Env):
     def __init__(self):
         self.sim = Simulator()
         # {0: noop, 1: up, 2: left, 3: down, 4: right}
-        self.action_space = Discrete(5)
+        self.action_space = Owndiscrete(5)
         # {up: [blank, wall, food, danger], ...}
         self.observation_space = Box(low=-1, high=1, shape=(4,))
 
