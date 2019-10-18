@@ -41,7 +41,7 @@ pyzmq==16.0.3
 requests==2.18.4
 scipy==1.0.0
 six==1.11.0
-tensorflow==1.4.1
+tensorflow==1.12.2
 tensorflow-tensorboard==0.4.0rc3
 tqdm==4.19.5
 urllib3==1.22
